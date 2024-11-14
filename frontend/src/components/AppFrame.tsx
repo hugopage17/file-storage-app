@@ -2,7 +2,7 @@ import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import HomeIcon from '@mui/icons-material/Home';
-import { Avatar, CssBaseline } from '@mui/material';
+import { Avatar, CssBaseline, styled } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -18,6 +18,9 @@ import Button from '@mui/material/Button';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import { useLocation } from 'react-router-dom';
 import { signOut } from 'aws-amplify/auth';
+import { apiService } from '../services/api.service';
+import { StorageObject } from '../types';
+import StorageThumbnail from './storage-object/Thumbnail';
 
 interface Props {
     /**
@@ -26,6 +29,12 @@ interface Props {
      */
     window?: () => Window;
 }
+
+const StorageObjectsBox = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    gap: theme.spacing(4),
+    marginTop: theme.spacing(4)
+}))
 
 const drawerWidth = 240;
 const navItems = ['Home', 'About', 'Contact'];
@@ -40,7 +49,13 @@ export default function DrawerAppBar(props: Props) {
         setMobileOpen((prevState) => !prevState);
     };
 
+    const [storageObjects, setStorageObjects] = React.useState<StorageObject[]>([])
+
     const location = useLocation();
+
+    React.useEffect(() => {
+        apiService.listStorage(location.pathname).then(setStorageObjects);
+    }, [apiService, location])
 
     React.useEffect(() => setFilePaths(location.pathname.split('/').filter((path) => path !== '')), [location]);
 
@@ -69,7 +84,7 @@ export default function DrawerAppBar(props: Props) {
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar component="nav">
+            <AppBar component="nav" sx={{ p: 0 }}>
                 <Toolbar>
                     <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { sm: 'none' } }}>
                         <MenuIcon />
@@ -114,6 +129,9 @@ export default function DrawerAppBar(props: Props) {
                         </Link>
                     ))}
                 </Breadcrumbs>
+                <StorageObjectsBox>
+                    {storageObjects.map((storageObject) => <StorageThumbnail key={storageObject.FullPath} storageObject={storageObject} />)}
+                </StorageObjectsBox>
             </Box>
         </Box>
     );

@@ -7,8 +7,8 @@ import App from './App.tsx';
 Amplify.configure({
     Auth: {
         Cognito: {
-            userPoolId: 'ap-southeast-2_RqECyO3r4',
-            userPoolClientId: '3kbd9u6a2ugum01rq2rb5dlvf3',
+            userPoolId: 'ap-southeast-2_s17BJ39Bg',
+            userPoolClientId: '7ropuvd38umflu3nh8h13b983r',
             identityPoolId: '',
             loginWith: {
                 email: true,

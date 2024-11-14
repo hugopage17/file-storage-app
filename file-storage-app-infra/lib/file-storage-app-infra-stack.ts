@@ -8,7 +8,7 @@ export class FileStorageAppInfraStack extends cdk.Stack {
         super(scope, id, props);
 
         const storageBucket = new Bucket(this, 'file-storage-s3-bucket', {
-            bucketName: 'growth-collective-demo-app-storage-bucket',
+            bucketName: 'growth-collective-app-storage-bucket',
             removalPolicy: cdk.RemovalPolicy.DESTROY,
         });
 

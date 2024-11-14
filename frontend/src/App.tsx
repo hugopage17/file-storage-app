@@ -7,9 +7,7 @@ function App() {
     React.useEffect(() => {
         fetchAuthSession()
             .then((user) => {
-                if (user.tokens?.idToken?.payload) {
-                    console.log(user);
-                } else {
+                if (!user.tokens?.idToken?.payload) {
                     signInWithRedirect();
                 }
             })
