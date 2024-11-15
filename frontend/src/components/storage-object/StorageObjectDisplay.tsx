@@ -10,7 +10,7 @@ interface IProps {
 
 const StorageObjectsBox = styled(Box)(({ theme }) => ({
     display: 'flex',
-    gap: theme.spacing(4),
+    gap: theme.spacing(6),
     marginTop: theme.spacing(4),
 }));
 
@@ -33,6 +33,7 @@ const fetchStorage = (path: string) => {
 
     return cache.get(path);
 };
+
 
 const EmptyFolder = () => {
     return (

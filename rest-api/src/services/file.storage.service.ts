@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { CommonPrefix, _Object } from '@aws-sdk/client-s3';
-import { IS3ServiceClient, S3ServiceClient, ObjectTypeOptions } from './s3.service';
+import { IS3ServiceClient, S3ServiceClient } from './s3.service';
 import { Response } from './response.service';
 
 export interface IFormatStorageObject {
@@ -57,11 +57,11 @@ class FileStorageService {
                     const s3Object = await this.s3Service.getObject(content.Prefix);
                     return {
                         LastModified: s3Object.LastModified,
-                        Key: content.Prefix.replace(`${userId}${path}`, '').slice(0, -1),
-                        ObjectType: ObjectTypeOptions.FOLDER,
+                        Key: content.Prefix.replace(`${userId}${path}`, '').slice(0, -1).replaceAll('/',''),
                         CreatedAt: s3Object.LastModified,
                         Metadata: s3Object?.Metadata,
-                        FullPath: content.Prefix,
+                        FullPath: content.Prefix.replace(`${userId}`, '').slice(0, -1),
+                        ContentType: 'plain/folder'
                     };
                 } else if ("Key" in content) {
                     if(content.Key == `${userId}${path}/`) {
@@ -70,13 +70,12 @@ class FileStorageService {
                     const s3Object = await this.s3Service.getObject(content.Key);
                     return {
                         LastModified: content.LastModified,
-                        Tag: content.ETag,
-                        Key: content.Key?.replace(`${userId}${path}`, ''),
-                        ObjectType: ObjectTypeOptions.FILE,
+                        Key: content.Key?.replace(`${userId}${path}`, '').replaceAll('/',''),
                         Size: content.Size,
                         CreatedAt: content.LastModified,
                         Metadata: s3Object?.Metadata,
-                        FullPath: content.Key,
+                        FullPath: content.Key.replace(`${userId}/`, ''),
+                        ContentType: s3Object.ContentType
                     };
                 }
             })

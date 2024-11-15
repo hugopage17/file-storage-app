@@ -1,23 +1,38 @@
 import React from 'react';
-import { Typography } from '@mui/material';
+import { Typography, styled, ButtonBase } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { StorageObject } from '../../types';
-
 
 interface IProps {
     storageObject: StorageObject;
 }
 
+const Label = styled(Typography)(({ theme }) => ({
+    color: theme.palette.text.secondary
+}))
+
+const StorageObjectBox = styled(ButtonBase)(() => ({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    '&:focus': {
+        outline: 'none',
+        boxShadow: 'none',
+    },
+}))
+
 const StorageThumbnail: React.FC<IProps> = ({ storageObject }) => {
 
     const navigate = useNavigate();
 
-    const openFolder = (path: string) => {
-        navigate(path);
-    }
+    const openFolder = (path: string) => navigate(path);
 
     return (
-        <Typography onClick={() => openFolder(storageObject.Key)} variant='subtitle1'>{storageObject.Key}</Typography>
+        <StorageObjectBox onClick={() => openFolder(storageObject.FullPath)}>
+            <img src={`/file-icons/${storageObject.ContentType.split('/').pop()}.png`} alt='file-icon' width={48} />
+            <Label variant='body2'>{storageObject.Key}</Label>
+        </StorageObjectBox>
+
     )
 }
 

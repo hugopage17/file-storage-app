@@ -2,7 +2,7 @@ import React from 'react';
 import { fetchAuthSession, signInWithRedirect } from 'aws-amplify/auth';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
-import AppFrame from './components/AppFrame';
+import CurrentDirectoryDisplay from './components/CurrentDirectoryDisplay';
 import AppTheme from './AppTheme';
 
 function App() {
@@ -20,7 +20,8 @@ function App() {
         <ThemeProvider theme={AppTheme}>
             <Router>
                 <Routes>
-                    <Route path="*" element={<AppFrame />} />
+                    <Route path="*" element={<CurrentDirectoryDisplay />} />
+                    <Route path="/auth/callback" element={<div>Auth Successful</div>} />
                 </Routes>
             </Router>
         </ThemeProvider>

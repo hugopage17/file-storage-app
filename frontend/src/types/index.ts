@@ -7,9 +7,8 @@ export interface StorageObject {
     CreatedAt: Date;
     Key: string;
     LastModified: Date;
-    ObjectType: ObjectTypeOptions;
     Metadata: Record<string, string>;
-    Size: number;
-    Tag: string;
+    Size?: number;
     FullPath: string;
+    ContentType: string;
 }
