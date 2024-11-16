@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { NestedStack, RemovalPolicy } from 'aws-cdk-lib';
 import { Bucket, BlockPublicAccess, BucketAccessControl } from 'aws-cdk-lib/aws-s3';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { Distribution, OriginAccessIdentity, CloudFrontAllowedMethods, CloudFrontAllowedCachedMethods } from 'aws-cdk-lib/aws-cloudfront';
+import { CloudFrontWebDistribution, OriginAccessIdentity, CloudFrontAllowedMethods, CloudFrontAllowedCachedMethods } from 'aws-cdk-lib/aws-cloudfront';
 import { CognitoStack } from './cognito-stack';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import { CICDStack } from './cicd-stack';
@@ -27,19 +27,45 @@ export class FileStorageAppInfraStack extends cdk.Stack {
 
 
         const originAccessIdentity = new OriginAccessIdentity(this, `${id}-OriginAccessIdentity`);
-        const appCdn = new Distribution(this, `${id}-WebsiteDistribution`, {
-            defaultBehavior: {
-                origin: new origins.OriginGroup({
-                    primaryOrigin: origins.S3BucketOrigin.withOriginAccessControl(spaHostingBucket),
-                    fallbackOrigin: new origins.HttpOrigin(spaHostingBucket.bucketWebsiteUrl),
-                    fallbackStatusCodes: [404, 403],
-                }),
-            }
+        const appCdn = new CloudFrontWebDistribution(this, `${id}-WebsiteDistribution`, {
+            originConfigs: [
+                {
+                s3OriginSource: {
+                    s3BucketSource: spaHostingBucket,
+                    originAccessIdentity,
+                },
+                behaviors: [
+                    {
+                    isDefaultBehavior: true,
+                    allowedMethods: CloudFrontAllowedMethods.GET_HEAD_OPTIONS,
+                    cachedMethods: CloudFrontAllowedCachedMethods.GET_HEAD_OPTIONS,
+                    forwardedValues: {
+                        queryString: false,
+                        cookies: {
+                        forward: 'none',
+                        },
+                    },
+                    },
+                ],
+                },
+            ],
+            errorConfigurations: [
+                {
+                    errorCode: 403,
+                    responseCode: 200,
+                    responsePagePath: '/index.html',
+                    errorCachingMinTtl: 60,
+                },
+                {
+                    errorCode: 404,
+                    responseCode: 200,
+                    responsePagePath: '/index.html',
+                    errorCachingMinTtl: 60,
+                },
+            ],
         });
 
-        const githubSecret = new Secret(this, 'github-auth-secret', {
-            secretName: 'github/oauth/secret'
-        })
+        const githubSecret = Secret.fromSecretNameV2(this, 'github-auth-secret','github/oauth/secret')
 
         new CognitoStack(this, 'file-storage-cognito-stack');
 

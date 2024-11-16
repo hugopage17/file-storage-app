@@ -4,12 +4,12 @@ import { Pipeline, Artifact } from 'aws-cdk-lib/aws-codepipeline';
 import { GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { CodeBuildAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { PipelineProject, BuildSpec, LinuxBuildImage, BuildEnvironmentVariableType } from 'aws-cdk-lib/aws-codebuild';
-import { Distribution } from 'aws-cdk-lib/aws-cloudfront';
+import { CloudFrontWebDistribution } from 'aws-cdk-lib/aws-cloudfront';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 interface Props {
   spaHostingBucket: Bucket;
-  appCdn: Distribution;
+  appCdn: CloudFrontWebDistribution;
   appName: string;
   githubSecretName: string;
 }
