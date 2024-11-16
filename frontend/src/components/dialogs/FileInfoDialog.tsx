@@ -10,15 +10,6 @@ import moment from 'moment-timezone';
 import { StorageObject } from '../../types';
 import { Close } from '@mui/icons-material';
 
-const DropBox = styled(Box)(({ theme }) => ({
-    border: `2px dashed ${theme.palette.text.secondary}`,
-    padding: theme.spacing(4),
-    borderRadius: 4,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-}))
-
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
         padding: theme.spacing(2),
@@ -28,27 +19,11 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-const ActionButton = styled(Button)(() => ({
-    textTransform: 'none',
-    '&:focus': {
-        outline: 'none',
-        boxShadow: 'none',
-    }
-}))
-
-const StyledIconButton = styled(IconButton)(() => ({
-    textTransform: 'none',
-    '&:focus': {
-        outline: 'none',
-        boxShadow: 'none',
-    }
-}))
-
 
 interface IProps {
     storageObject: StorageObject;
     downloadObject: () => Promise<void>;
-    deleteObject: () => Promise<void>;
+    deleteObject: (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => Promise<void>;
 }
 
 const FileInfo: React.FC<DialogProps<IProps>> = ({ payload, open, onClose }) => {
@@ -59,7 +34,7 @@ const FileInfo: React.FC<DialogProps<IProps>> = ({ payload, open, onClose }) => 
         <BootstrapDialog maxWidth='xl' open={open} onClose={() => onClose()}>
             <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography>{storageObject.Key}</Typography>
-                <StyledIconButton onClick={onClose}><Close /></StyledIconButton>
+                <IconButton onClick={() => onClose()}><Close /></IconButton>
             </DialogTitle>
             <DialogContent sx={{ width: 640 }} dividers>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '80%', }}>
@@ -117,8 +92,8 @@ const FileInfo: React.FC<DialogProps<IProps>> = ({ payload, open, onClose }) => 
                 </Box>
             </DialogContent>
             <DialogActions>
-                <ActionButton color='primary' onClick={downloadObject}>Download</ActionButton>
-                <ActionButton color='error' onClick={deleteObject}>Delete</ActionButton>
+                <Button color='primary' onClick={downloadObject}>Download</Button>
+                <Button color='error' onClick={deleteObject}>Delete</Button>
             </DialogActions>
         </BootstrapDialog >
     )

@@ -2,7 +2,16 @@ import React from 'react';
 import { styled, Box, Button } from '@mui/material';
 import { StorageObject } from '../../types';
 import StorageThumbnail from './Thumbnail';
+import StorageListItem from './StorageListItem';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import { useNavigate } from 'react-router-dom';
 import { apiService } from '../../services/api.service';
+import AppContext from '../../AppContext';
 
 interface IProps {
     path: string;
@@ -50,6 +59,11 @@ const EmptyFolder: React.FC<{ upload: () => Promise<void> }> = ({ upload }) => {
 
 const StorageObjectDisplay: React.FC<IProps> = ({ path, upload }) => {
     const storage: StorageObject[] = fetchStorage(path).read();
+    const navigate = useNavigate();
+
+    const { displayView } = React.useContext(AppContext);
+
+    const openFolder = (path: string) => navigate(path);
 
     if (!storage?.length) {
         return <EmptyFolder upload={upload} />;
@@ -57,9 +71,29 @@ const StorageObjectDisplay: React.FC<IProps> = ({ path, upload }) => {
 
     return (
         <StorageObjectsBox>
-            {storage.map((storageObject) => (
-                <StorageThumbnail key={storageObject.FullPath} storageObject={storageObject} />
+            {displayView === 'tile' && storage.map((storageObject) => (
+                <StorageThumbnail openFolder={() => openFolder(storageObject.FullPath)} key={`${storageObject.FullPath}-tile-view`} storageObject={storageObject} />
             ))}
+            {displayView === 'list' &&
+                <TableContainer>
+                    <Table size="small" sx={{ minWidth: 650 }} aria-label="storage-table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Name</TableCell>
+                                <TableCell>File Type</TableCell>
+                                <TableCell>Created At</TableCell>
+                                <TableCell align='center'></TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {storage.map((storageObject) => (
+                                <StorageListItem openFolder={() => openFolder(storageObject.FullPath)} key={`${storageObject.FullPath}-list-view`} storageObject={storageObject} />
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+
+            }
         </StorageObjectsBox>
     );
 };

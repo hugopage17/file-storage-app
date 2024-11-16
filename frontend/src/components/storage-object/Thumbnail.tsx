@@ -5,10 +5,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useDialogs } from '@toolpad/core/useDialogs';
-import { useNavigate } from 'react-router-dom';
 import { StorageObject } from '../../types';
-import { apiService } from '../../services/api.service';
 import FileInfo from '../dialogs/FileInfoDialog';
+import StorageObjectService from '../../services/storage-object.service';
 
 const Label = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.secondary
@@ -18,17 +17,6 @@ const StorageObjectBox = styled(ButtonBase)(() => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    '&:focus': {
-        outline: 'none',
-        boxShadow: 'none',
-    },
-}))
-
-const MoreButton = styled(IconButton)(() => ({
-    '&:focus': {
-        outline: 'none',
-        boxShadow: 'none',
-    },
 }))
 
 const MenuItemText = styled(ListItemText)(({ theme }) => ({
@@ -38,13 +26,11 @@ const MenuItemText = styled(ListItemText)(({ theme }) => ({
 
 interface IProps {
     storageObject: StorageObject;
+    openFolder: () => void;
 }
 
-const StorageThumbnail: React.FC<IProps> = ({ storageObject }) => {
-    const navigate = useNavigate();
+const StorageThumbnail: React.FC<IProps> = ({ storageObject, openFolder }) => {
     const dialogs = useDialogs();
-
-    const openFolder = (path: string) => navigate(path);
 
     const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
 
@@ -54,25 +40,9 @@ const StorageThumbnail: React.FC<IProps> = ({ storageObject }) => {
     };
 
     const downloadObject = async (event?: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
-        event?.stopPropagation();
-        const path = storageObject.ContentType.split('/').pop() === 'folder' ? `${storageObject.FullPath.slice(1)}/` : storageObject.FullPath
-        const { url } = await apiService.download(path);
-        const link = document.createElement('a');
-        link.target = '_blank';
-        link.href = url;
-        link.download = storageObject.Key;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        await StorageObjectService.downloadObject(storageObject, event);
         setMenuAnchor(null);
     }
-
-    const deleteObject = async (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
-        event.stopPropagation();
-        const path = storageObject.ContentType.split('/').pop() === 'folder' ? `${storageObject.FullPath.slice(1)}/` : storageObject.FullPath
-        await apiService.deleteObject(path)
-        window.location.reload()
-    };
 
     const openInfo = async (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
         event.stopPropagation();
@@ -80,7 +50,9 @@ const StorageThumbnail: React.FC<IProps> = ({ storageObject }) => {
         await dialogs.open(FileInfo, {
             storageObject,
             downloadObject,
-            deleteObject
+            deleteObject: async () => {
+                await StorageObjectService.deleteObject(storageObject, event)
+            }
         });
     };
 
@@ -99,13 +71,13 @@ const StorageThumbnail: React.FC<IProps> = ({ storageObject }) => {
         {
             name: 'Delete',
             icon: <DeleteIcon />,
-            action: async (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => await deleteObject(event)
+            action: async (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => await StorageObjectService.deleteObject(storageObject, event)
         }
     ];
 
-    const handleClick = async (path: string) => {
+    const handleClick = async () => {
         if (storageObject.ContentType.split('/').pop() === 'folder') {
-            openFolder(path)
+            openFolder()
         } else {
             await downloadObject();
         }
@@ -122,13 +94,13 @@ const StorageThumbnail: React.FC<IProps> = ({ storageObject }) => {
     }
 
     return (
-        <StorageObjectBox onClick={() => handleClick(storageObject.FullPath)}>
+        <StorageObjectBox onClick={handleClick}>
             <img src={`/file-icons/${storageObject.ContentType.split('/').pop()}.png`} alt='file-icon' width={48} />
             <Label variant='body2'>
                 {fileName()}
-                <MoreButton onClick={openMenu} sx={{ width: 20, height: 20 }} >
+                <IconButton onClick={openMenu} sx={{ width: 20, height: 20 }} >
                     <MoreVertIcon sx={{ width: 18, height: 18 }} />
-                </MoreButton>
+                </IconButton>
                 <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={(event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
                     event.stopPropagation();
                     setMenuAnchor(null);

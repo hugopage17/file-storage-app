@@ -24,14 +24,6 @@ const PanelToolbar = styled(Box)(({ theme }) => ({
     marginBottom: theme.spacing(1),
 }));
 
-const StyledButton = styled(Button)(() => ({
-    textTransform: 'none',
-    '&:focus': {
-        outline: 'none',
-        boxShadow: 'none',
-    },
-}));
-
 const BreadcrumbLink = styled(Link)(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -68,7 +60,6 @@ const CurrentDirectory: React.FC = () => {
     const onDrop = async (acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
             const file = acceptedFiles[0];
-            console.log(file)
 
             const reader = new FileReader();
             const fileType = file.type;
@@ -138,8 +129,8 @@ const CurrentDirectory: React.FC = () => {
                         ))}
                     </Breadcrumbs>
                     <Box sx={{ display: 'flex', gap: '8px' }}>
-                        <StyledButton size='small' variant="contained" startIcon={<FileUploadIcon />} onClick={openFileUpload}>Upload File</StyledButton>
-                        <StyledButton variant="text" onClick={(event) => setCreateFolderAnchor(event.currentTarget)} startIcon={<CreateNewFolderIcon />}>Create Folder</StyledButton>
+                        <Button size='small' variant="contained" startIcon={<FileUploadIcon />} onClick={openFileUpload}>Upload File</Button>
+                        <Button variant="text" onClick={(event) => setCreateFolderAnchor(event.currentTarget)} startIcon={<CreateNewFolderIcon />}>Create Folder</Button>
                         <CreateFolder onClose={() => setCreateFolderAnchor(null)} anchorEl={createFolderAnchor} currentDirectory={filePaths.join('/')} handleCreateFolder={createStorageObject} isUploading={isUploading} />
                     </Box>
                 </PanelToolbar>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { DialogProps } from '@toolpad/core/useDialogs';
-import { Box, useTheme, Button } from '@mui/material';
+import { Box, useTheme, Button, Typography } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -27,14 +27,6 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-const ActionButton = styled(Button)(() => ({
-    textTransform: 'none',
-    '&:focus': {
-        outline: 'none',
-        boxShadow: 'none',
-    }
-}))
-
 interface IProps {
     onDrop: (acceptedFiles: File[]) => Promise<void>;
     onConfirm: () => void;
@@ -44,6 +36,8 @@ const UploadFileContent: React.FC<DialogProps<IProps>> = ({ payload, open, onClo
     const { onDrop, onConfirm } = payload;
     const theme = useTheme();
 
+    const [error, setError] = React.useState<string | undefined>();
+
     return (
         <BootstrapDialog maxWidth='xl' open={open} onClose={() => onClose}>
             <DialogTitle sx={{ m: 0, p: 2 }}>Upload a new File</DialogTitle>
@@ -51,22 +45,24 @@ const UploadFileContent: React.FC<DialogProps<IProps>> = ({ payload, open, onClo
                 <>
                     <Dropzone onDrop={(files) => {
                         onDrop(files).then(() => {
+                            setError(undefined)
                             onConfirm();
                             onClose();
-                        });
+                        }).catch((error) => setError(error.toString()))
                     }}>
                         {({ getRootProps, getInputProps }) => (
                             <DropBox {...getRootProps()}>
                                 <input {...getInputProps()} />
                                 <p>Drag 'n' drop some files here, or click to select files</p>
                                 <FileUploadIcon sx={{ fontSize: 66, color: theme.palette.text.secondary }} />
+                                {error && <Typography color='error'>{error}</Typography>}
                             </DropBox>
                         )}
                     </Dropzone>
                 </>
             </DialogContent>
             <DialogActions>
-                <ActionButton color='error' onClick={() => onClose()}>Cancel</ActionButton>
+                <Button color='error' onClick={() => onClose()}>Cancel</Button>
             </DialogActions>
         </BootstrapDialog>
     )

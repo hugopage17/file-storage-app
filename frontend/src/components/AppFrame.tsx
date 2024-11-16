@@ -1,6 +1,13 @@
 import React from 'react';
-import { Avatar, CssBaseline, Toolbar, Typography, Box, AppBar, Menu, MenuItem, IconButton, MenuList, Divider, useTheme } from '@mui/material';
+import { fetchAuthSession } from 'aws-amplify/auth';
+import { Avatar, CssBaseline, Toolbar, Typography, Box, AppBar, Menu, ListItem, List, IconButton, ListItemText, Divider, useTheme, Switch } from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import GridViewIcon from '@mui/icons-material/GridView';
+import ListIcon from '@mui/icons-material/List';
 import { signOut } from 'aws-amplify/auth';
+import AppContext from '../AppContext';
 
 interface IProps {
     children: React.ReactNode;
@@ -12,13 +19,31 @@ const AppFrame: React.FC<IProps> = ({ children }) => {
 
     const theme = useTheme()
 
+    const [user, setUser] = React.useState<any>({});
+
+    const { darkMode, toggleDarkMode, toggleDisplayView, displayView } = React.useContext(AppContext);
+
+    React.useEffect(() => {
+        fetchAuthSession()
+            .then((user) => {
+                if (user.tokens?.idToken?.payload) {
+                    setUser(user.tokens?.idToken?.payload);
+                }
+            })
+    }, [])
+
+    const handleDisplayView = (
+        _: React.MouseEvent<HTMLElement>,
+        newAlignment: string,
+    ) => toggleDisplayView(newAlignment);
+
     return (
         <Box>
             <CssBaseline />
             <AppBar component="nav" sx={{ p: 0 }} elevation={0} color='transparent'>
                 <Toolbar variant="dense">
                     <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px' }}>
-                        <img src="/logo/logo.png" alt="app-logo" width={32} />
+                        <img src="/logo/upload.png" alt="app-logo" width={32} />
                         <Typography fontWeight={theme.typography.fontWeightBold}>Cloud Storage</Typography>
                     </span>
 
@@ -32,14 +57,45 @@ const AppFrame: React.FC<IProps> = ({ children }) => {
                         open={openMenu}
                         onClose={() => setAnchorEl(null)}
                     >
-                        <MenuList dense>
-                            <MenuItem onClick={async () => await signOut()}>Logout</MenuItem>
-                        </MenuList>
+                        <List dense>
+                            <ListItem>
+                                <ListItemText primary='Account' secondary={user?.email} />
+                            </ListItem>
+                            <Divider />
+                            <ListItem>
+                                <ListItemText primary='Dark Mode' />
+                                <Switch checked={darkMode} onChange={(e) => toggleDarkMode(e.target.checked)} />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText primary='Layout' />
+                                <ToggleButtonGroup
+                                    value={displayView}
+                                    exclusive
+                                    onChange={handleDisplayView}
+                                    aria-label="handle-display-view"
+                                    size="small"
+                                >
+                                    <ToggleButton color='primary' value="tile" aria-label="tile aligned">
+                                        <GridViewIcon />
+                                    </ToggleButton>
+                                    <ToggleButton color='primary' value="list" aria-label="list aligned">
+                                        <ListIcon />
+                                    </ToggleButton>
+                                </ToggleButtonGroup>
+                            </ListItem>
+                            <Divider />
+                            <ListItem onClick={async () => await signOut()} secondaryAction={
+                                <IconButton edge="end" aria-label="comments">
+                                    <LogoutIcon />
+                                </IconButton>
+                            }>
+                                <ListItemText primary='Logout' />
+                            </ListItem>
+                        </List>
                     </Menu>
                 </Toolbar>
                 <Divider />
             </AppBar>
-
             {children}
         </Box>
     );
