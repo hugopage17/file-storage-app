@@ -1,11 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { NestedStack, RemovalPolicy } from 'aws-cdk-lib';
+import { RemovalPolicy } from 'aws-cdk-lib';
 import { Bucket, BlockPublicAccess, BucketAccessControl } from 'aws-cdk-lib/aws-s3';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { CloudFrontWebDistribution, OriginAccessIdentity, CloudFrontAllowedMethods, CloudFrontAllowedCachedMethods } from 'aws-cdk-lib/aws-cloudfront';
 import { CognitoStack } from './cognito-stack';
-import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import { CICDStack } from './cicd-stack';
 
 export class FileStorageAppInfraStack extends cdk.Stack {
@@ -67,7 +66,9 @@ export class FileStorageAppInfraStack extends cdk.Stack {
 
         const githubSecret = Secret.fromSecretNameV2(this, 'github-auth-secret','github/oauth/secret')
 
-        new CognitoStack(this, 'file-storage-cognito-stack');
+        new CognitoStack(this, 'file-storage-cognito-stack', {
+            cloudfontUrl: appCdn.distributionDomainName
+        });
 
         new CICDStack(this, 'file-storage-app-cicd-stack', {
             githubSecretName: githubSecret.secretName,

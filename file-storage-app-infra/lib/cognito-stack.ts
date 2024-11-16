@@ -1,11 +1,17 @@
 import { Construct } from 'constructs';
-import { NestedStack, NestedStackProps, CfnOutput } from 'aws-cdk-lib';
+import { NestedStack, CfnOutput } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { OAuthScope, UserPool } from 'aws-cdk-lib/aws-cognito';
 
+interface IProps {
+    cloudfontUrl: string;
+}
+
 export class CognitoStack extends NestedStack {
-    constructor(scope: Construct, id: string, props?: NestedStackProps) {
-        super(scope, id, props);
+    constructor(scope: Construct, id: string, props: IProps) {
+        super(scope, id);
+        
+        const { cloudfontUrl } = props;
 
         const autoVerifyFunction = new lambda.Function(this, 'AutoVerifyFunction', {
             runtime: lambda.Runtime.NODEJS_20_X,
@@ -61,8 +67,8 @@ export class CognitoStack extends NestedStack {
                     authorizationCodeGrant: true,
                 },
                 scopes: [OAuthScope.OPENID, OAuthScope.EMAIL, OAuthScope.PROFILE],
-                callbackUrls: ['http://localhost:5173/auth/callback'],
-                logoutUrls: ['http://localhost:5173/signin'],
+                callbackUrls: ['http://localhost:5173', cloudfontUrl],
+                logoutUrls: ['http://localhost:5173', cloudfontUrl],
             },
         });
 
