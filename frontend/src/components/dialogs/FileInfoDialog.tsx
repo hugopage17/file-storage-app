@@ -23,7 +23,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 interface IProps {
     storageObject: StorageObject;
     downloadObject: () => Promise<void>;
-    deleteObject: (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => Promise<void>;
+    deleteObject: (event: React.MouseEvent<HTMLLIElement, MouseEvent> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => Promise<void>;
 }
 
 const FileInfo: React.FC<DialogProps<IProps>> = ({ payload, open, onClose }) => {

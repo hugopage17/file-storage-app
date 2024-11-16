@@ -67,8 +67,8 @@ export class CognitoStack extends NestedStack {
                     authorizationCodeGrant: true,
                 },
                 scopes: [OAuthScope.OPENID, OAuthScope.EMAIL, OAuthScope.PROFILE],
-                callbackUrls: ['http://localhost:5173', cloudfontUrl],
-                logoutUrls: ['http://localhost:5173', cloudfontUrl],
+                callbackUrls: ['http://localhost:5173', `https://${cloudfontUrl}`],
+                logoutUrls: ['http://localhost:5173', `https://${cloudfontUrl}`],
             },
         });
 
