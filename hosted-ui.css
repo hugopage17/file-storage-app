@@ -39,18 +39,14 @@
   height: 40px;
   width: 100%;
   color: #fff;
-  background-color: #0d804e;
-  border: 1px solid #0d804e;
-  .submitButton-customizable:focus {
-    background-color: #13a867;
-    border: 1px solid #13a867;
-  }
+  background-color: #10a394;
+  border: 1px solid #10a394;
 
 }
 
 .submitButton-customizable:hover {
   color: #fff;
-  background-color: #13a867;
+  background-color: #12b5a4;
 }
 
 .errorMessage-customizable {
@@ -71,7 +67,7 @@
 }
 
 .inputField-customizable:focus {
-  border-color: #0d804e;
+  border-color: #10a394;
   outline: 0;
 }
 

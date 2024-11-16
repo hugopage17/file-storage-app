@@ -6,12 +6,14 @@ import { apiService } from '../../services/api.service';
 
 interface IProps {
     path: string;
+    upload: () => Promise<void>
 }
 
 const StorageObjectsBox = styled(Box)(({ theme }) => ({
     display: 'flex',
     gap: theme.spacing(6),
     marginTop: theme.spacing(4),
+    flexWrap: 'wrap'
 }));
 
 const cache = new Map();
@@ -35,22 +37,22 @@ const fetchStorage = (path: string) => {
 };
 
 
-const EmptyFolder = () => {
+const EmptyFolder: React.FC<{ upload: () => Promise<void> }> = ({ upload }) => {
     return (
         <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', marginTop: '40px' }}>
             <img src="/empty.png" alt="empty-directory" width={256} />
-            <Button color="info" variant="text" sx={{ textTransform: 'none', marginTop: '12px' }}>
+            <Button onClick={upload} color="info" variant="text" sx={{ textTransform: 'none', marginTop: '12px' }}>
                 Folder Empty, Upload a file
             </Button>
         </Box>
     );
 };
 
-const StorageObjectDisplay: React.FC<IProps> = ({ path }) => {
+const StorageObjectDisplay: React.FC<IProps> = ({ path, upload }) => {
     const storage: StorageObject[] = fetchStorage(path).read();
 
-    if (!storage.length) {
-        return <EmptyFolder />;
+    if (!storage?.length) {
+        return <EmptyFolder upload={upload} />;
     }
 
     return (

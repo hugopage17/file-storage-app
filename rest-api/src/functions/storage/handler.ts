@@ -14,6 +14,16 @@ export const endpoints: EventType.Endpoint[] = [
         path: 'storage/list',
         method: HttpType.Method.POST,
         execute: async(event) => await fileStorageService.listDirectory(event),
+    },
+    {
+        path: 'storage/download',
+        method: HttpType.Method.POST,
+        execute: async(event) => await fileStorageService.download(event),
+    },
+    {
+        path: 'storage/delete',
+        method: HttpType.Method.DELETE,
+        execute: async(event) => await fileStorageService.deleteObject(event),
     }
 ];
 

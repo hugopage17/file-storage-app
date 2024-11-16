@@ -2,8 +2,9 @@ import React from 'react';
 import { fetchAuthSession, signInWithRedirect } from 'aws-amplify/auth';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
+import { DialogsProvider } from '@toolpad/core/useDialogs';
 import CurrentDirectoryDisplay from './components/CurrentDirectoryDisplay';
-import AppTheme from './AppTheme';
+import appTheme from './AppTheme';
 
 function App() {
     React.useEffect(() => {
@@ -16,14 +17,17 @@ function App() {
             .catch(() => signInWithRedirect());
     }, []);
 
+    const theme = appTheme(true)
+
     return (
-        <ThemeProvider theme={AppTheme}>
-            <Router>
-                <Routes>
-                    <Route path="*" element={<CurrentDirectoryDisplay />} />
-                    <Route path="/auth/callback" element={<div>Auth Successful</div>} />
-                </Routes>
-            </Router>
+        <ThemeProvider theme={theme}>
+            <DialogsProvider>
+                <Router>
+                    <Routes>
+                        <Route path="*" element={<CurrentDirectoryDisplay />} />
+                    </Routes>
+                </Router>
+            </DialogsProvider>
         </ThemeProvider>
     );
 }

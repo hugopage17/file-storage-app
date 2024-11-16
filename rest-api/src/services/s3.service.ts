@@ -1,4 +1,5 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsCommandOutput, PutObjectCommandInput, ListObjectsCommand, GetObjectCommand, GetObjectCommandOutput } from '@aws-sdk/client-s3';
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 interface IUploadParams {
   fileName: string;
@@ -24,10 +25,11 @@ export interface StorageObject {
 }
 
 export interface IS3ServiceClient {
-    listObjects(path: string, userId: string): Promise<ListObjectsCommandOutput>
-    upload(params: IUploadParams): Promise<{ Message: string; Key: string; }>
-    deleteFile(key: string): Promise<void>
-    getObject(key: string): Promise<GetObjectCommandOutput>
+    listObjects(path: string, userId: string): Promise<ListObjectsCommandOutput>;
+    upload(params: IUploadParams): Promise<{ Message: string; Key: string; }>;
+    deleteFile(key: string): Promise<void>;
+    getObject(key: string): Promise<GetObjectCommandOutput>;
+    generatePresignedUrl(Key: string): Promise<string>;
 }
 
 export class S3ServiceClient implements IS3ServiceClient {
@@ -99,4 +101,13 @@ export class S3ServiceClient implements IS3ServiceClient {
     });
     return await this.s3.send(getObject);
   }
+
+    async generatePresignedUrl(Key: string): Promise<string> {
+        const command = new GetObjectCommand({
+            Bucket: this.bucketName,
+            Key,
+        });
+
+        return await getSignedUrl(this.s3, command, { expiresIn: Number(60 * 5) });
+    }
 }

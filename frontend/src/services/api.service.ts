@@ -28,6 +28,57 @@ class APIService {
             throw error;
         }
     }
+
+    async upload(uploadParams: any) {
+        try {
+            const authSession = await fetchAuthSession();
+            const idToken = authSession.tokens?.idToken?.toString();
+            const res = await this.axiosClient.post('/storage/upload', JSON.stringify(uploadParams), {
+                headers: {
+                    'Authorization': `Bearer ${idToken}`,
+                }
+            })
+            console.log(res.data)
+            return JSON.parse(res.data);
+        } catch(error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async deleteObject(filePath: string) {
+        try {
+            const authSession = await fetchAuthSession();
+            const idToken = authSession.tokens?.idToken?.toString();
+            await this.axiosClient.delete('/storage/delete', {
+                headers: {
+                    'Authorization': `Bearer ${idToken}`,
+                },
+                data: JSON.stringify({
+                    path: filePath
+                })
+            })
+        } catch(error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async download(filePath: string) {
+        try {
+            const authSession = await fetchAuthSession();
+            const idToken = authSession.tokens?.idToken?.toString();
+            const res = await this.axiosClient.post('/storage/download', JSON.stringify({ path: filePath }), {
+                headers: {
+                    'Authorization': `Bearer ${idToken}`,
+                }
+            });
+            return JSON.parse(res.data);
+        } catch(error) {
+            console.error(error);
+            throw error;
+        }
+    }
 }
 
 export const apiService = new APIService();

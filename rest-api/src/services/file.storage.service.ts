@@ -39,6 +39,8 @@ class FileStorageService {
         let fileBody = fileData;
         if(contentType.split('/')[0] === 'image') {
             fileBody = Buffer.from(fileData.replace(/^data:image\/\w+;base64,/, ""),'base64')
+        } else if (contentType === 'application/pdf') {
+            fileBody = Buffer.from(fileData.replace(/^data:application\/pdf;base64,/, ""), 'base64');
         }
         
         await this.s3Service.upload({
@@ -81,6 +83,22 @@ class FileStorageService {
             })
         ) ?? [];
         return formattedContent.filter(Boolean).sort((a, b) => new Date(b.LastModified).getTime() - new Date(a.LastModified).getTime())
+    }
+
+    async download(event: APIGatewayProxyEvent) {
+        const { path } = JSON.parse(JSON.stringify(event.body));
+        const claims = event.requestContext.authorizer.claims;
+        
+        const presignedUrl = await this.s3Service.generatePresignedUrl(`${claims.sub}/${path}`)
+        return new Response.OKCreated({ url: presignedUrl })
+    }
+
+    async deleteObject(event: APIGatewayProxyEvent) {
+        const { path } = JSON.parse(JSON.stringify(event.body));
+        const claims = event.requestContext.authorizer.claims;
+        
+        await this.s3Service.deleteFile(`${claims.sub}/${path}`)
+        return new Response.OKNoContent()
     }
 }
 

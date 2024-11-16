@@ -11,7 +11,7 @@ export default {
   iamRoleStatements: [
     {
       Effect: 'Allow',
-      Action: ['s3:PutObject', 's3:GetObject', 's3:ListBucket'],
+      Action: ['s3:PutObject', 's3:GetObject', 's3:ListBucket', 's3:DeleteObject'],
       Resource: ['arn:aws:s3:::${file(./src/config.json):file_storage_bucket}', 'arn:aws:s3:::${file(./src/config.json):file_storage_bucket}/*']
     },
   ],
@@ -40,6 +40,27 @@ export default {
             'application/json': listDirectorySchema,
           },
         },
+      },
+    },
+    {
+      http: {
+        method: 'post',
+        path: 'storage/download',
+        cors: true,
+        authorizer,
+        // request: {
+        //   schemas: {
+        //     'application/json': listDirectorySchema,
+        //   },
+        // },
+      },
+    },
+    {
+      http: {
+        method: 'delete',
+        path: 'storage/delete',
+        cors: true,
+        authorizer,
       },
     },
   ],

@@ -15,8 +15,8 @@ Amplify.configure({
                 oauth: {
                     domain: 'file-storage-app.auth.ap-southeast-2.amazoncognito.com',
                     scopes: ['openid', 'email', 'profile'],
-                    redirectSignIn: ['http://localhost:5173/auth/callback'],
-                    redirectSignOut: ['http://localhost:5173/signin'],
+                    redirectSignIn: ['http://localhost:5173'],
+                    redirectSignOut: ['http://localhost:5173'],
                     responseType: 'code',
                 },
             },
