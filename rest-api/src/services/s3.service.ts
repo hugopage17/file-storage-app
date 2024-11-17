@@ -95,11 +95,16 @@ export class S3ServiceClient implements IS3ServiceClient {
   }
 
   async getObject(Key: string) {
-    const getObject = new GetObjectCommand({
-        Bucket: this.bucketName,
-        Key,
-    });
-    return await this.s3.send(getObject);
+        try {
+            const getObject = new GetObjectCommand({
+            Bucket: this.bucketName,
+            Key,
+        });
+        return await this.s3.send(getObject);
+    } catch (error: any) {
+      console.error(error);
+      return null
+    }
   }
 
     async generatePresignedUrl(Key: string): Promise<string> {
