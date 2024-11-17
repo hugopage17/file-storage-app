@@ -114,7 +114,7 @@ export class CICDStack extends NestedStack {
             statements: [
               new PolicyStatement({
                 resources: ['*'],
-                actions: ['cloudformation:*'],
+                actions: ['apigateway:*', 's3:*', 'cloudformation:*', 'iam:*', 'lambda:*'],
               })
             ],
           }),

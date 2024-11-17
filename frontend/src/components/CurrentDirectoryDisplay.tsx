@@ -1,10 +1,12 @@
 import React from 'react';
-import { styled, LinearProgress, Divider, Link, Toolbar, Breadcrumbs, Button, Box } from '@mui/material';
+import { styled, LinearProgress, Divider, Link, Toolbar, Breadcrumbs, Button, Box, Typography } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import { useDialogs } from '@toolpad/core/useDialogs';
+import ReplayIcon from '@mui/icons-material/Replay';
 import { useLocation } from 'react-router-dom';
+import { ErrorBoundary } from "react-error-boundary";
 import StorageObjectDisplay from './storage-object/StorageObjectDisplay';
 import AppFrame from './AppFrame';
 import UploadFileContent from './dialogs/UploadFileDialog';
@@ -31,6 +33,18 @@ const BreadcrumbLink = styled(Link)(({ theme }) => ({
         color: theme.palette.info.light,
     },
 }));
+
+const ErrorDisplay = () => {
+    return (
+        <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', marginTop: '40px' }}>
+            <img src="/error.png" alt="error-logo" width={256} />
+            <Typography variant='subtitle1' sx={{ textTransform: 'none', marginTop: '12px' }}>
+                Oops, something went wrong trying to access storage
+            </Typography>
+            <Button color='info' onClick={() => window.location.reload()} endIcon={<ReplayIcon />}>Reload</Button>
+        </Box>
+    )
+}
 
 const CurrentDirectory: React.FC = () => {
     const [filePaths, setFilePaths] = React.useState<string[]>([]);
@@ -139,7 +153,9 @@ const CurrentDirectory: React.FC = () => {
                 </PanelToolbar>
                 <Divider />
                 <React.Suspense fallback={<LinearProgress color="secondary" />}>
-                    <StorageObjectDisplay upload={openFileUpload} path={location.pathname} />
+                    <ErrorBoundary fallback={<ErrorDisplay />}>
+                        <StorageObjectDisplay upload={openFileUpload} path={location.pathname} />
+                    </ErrorBoundary>
                 </React.Suspense>
             </FileListPanel>
         </AppFrame>
