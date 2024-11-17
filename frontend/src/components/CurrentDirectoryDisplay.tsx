@@ -6,9 +6,8 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import { useDialogs } from '@toolpad/core/useDialogs';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { useLocation } from 'react-router-dom';
-import { ErrorBoundary } from "react-error-boundary";
+import { ErrorBoundary } from 'react-error-boundary';
 import StorageObjectDisplay from './storage-object/StorageObjectDisplay';
-import AppFrame from './AppFrame';
 import UploadFileContent from './dialogs/UploadFileDialog';
 import { apiService } from '../services/api.service';
 import CreateFolder from './menus/CreateFolder';
@@ -39,13 +38,15 @@ const ErrorDisplay = () => {
     return (
         <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', marginTop: '40px' }}>
             <img src="/error.png" alt="error-logo" width={256} />
-            <Typography variant='subtitle1' sx={{ textTransform: 'none', marginTop: '12px' }}>
+            <Typography variant="subtitle1" sx={{ textTransform: 'none', marginTop: '12px' }}>
                 Oops, something went wrong trying to access storage
             </Typography>
-            <Button color='info' onClick={() => window.location.reload()} endIcon={<ReplayIcon />}>Reload</Button>
+            <Button color="info" onClick={() => window.location.reload()} endIcon={<ReplayIcon />}>
+                Reload
+            </Button>
         </Box>
-    )
-}
+    );
+};
 
 const CurrentDirectory: React.FC = () => {
     const [filePaths, setFilePaths] = React.useState<string[]>([]);
@@ -54,19 +55,28 @@ const CurrentDirectory: React.FC = () => {
     const location = useLocation();
     const dialogs = useDialogs();
 
-    React.useEffect(() => setFilePaths(location.pathname.replace(/%20/g, ' ').split('/').filter((path) => !['', 'storage'].includes(path))), [location]);
+    React.useEffect(
+        () =>
+            setFilePaths(
+                location.pathname
+                    .replace(/%20/g, ' ')
+                    .split('/')
+                    .filter((path) => !['', 'storage'].includes(path))
+            ),
+        [location]
+    );
 
     const navigateBreadCrums = (index: number) => filePaths.slice(0, index + 1).join('/');
 
     const [isUploading, toggleUploadState] = React.useState<boolean>(false);
 
     const createStorageObject = async (uploadParams: IUploadParams) => {
-        console.log(uploadParams)
+        console.log(uploadParams);
         try {
             toggleUploadState(true);
             if (uploadParams.isFolder) {
                 if (uploadParams.fileName.includes(' ')) {
-                    throw new Error('Folders cannot contact spaces')
+                    throw new Error('Folders cannot contact spaces');
                 }
             }
             await apiService.upload(uploadParams);
@@ -74,8 +84,7 @@ const CurrentDirectory: React.FC = () => {
         } finally {
             toggleUploadState(false);
         }
-
-    }
+    };
 
     const onDrop = async (acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
@@ -127,39 +136,41 @@ const CurrentDirectory: React.FC = () => {
     const openFileUpload = async () => {
         await dialogs.open(UploadFileContent, {
             onConfirm: () => null,
-            onDrop
+            onDrop,
         });
     };
 
     return (
-        <AppFrame>
-            <FileListPanel>
-                <Toolbar />
-                <PanelToolbar>
-                    <Breadcrumbs aria-label="breadcrumb">
-                        <BreadcrumbLink underline="hover" color="inherit" href="/storage">
-                            <HomeIcon sx={{ mr: 0.5, fontSize: '24px' }} fontSize="inherit" />
+        <FileListPanel>
+            <Toolbar />
+            <PanelToolbar>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <BreadcrumbLink underline="hover" color="inherit" href="/storage">
+                        <HomeIcon sx={{ mr: 0.5, fontSize: '24px' }} fontSize="inherit" />
+                    </BreadcrumbLink>
+                    {filePaths.map((path, index) => (
+                        <BreadcrumbLink underline="none" color="info" href={`/storage/${navigateBreadCrums(index)}`} key={`breadcrumb-path-${index}`}>
+                            {path}
                         </BreadcrumbLink>
-                        {filePaths.map((path, index) => (
-                            <BreadcrumbLink underline="none" color="info" href={`/storage/${navigateBreadCrums(index)}`} key={`breadcrumb-path-${index}`}>
-                                {path}
-                            </BreadcrumbLink>
-                        ))}
-                    </Breadcrumbs>
-                    <Box sx={{ display: 'flex', gap: '8px' }}>
-                        <Button size='small' variant="contained" startIcon={<FileUploadIcon />} onClick={openFileUpload}>Upload File</Button>
-                        <Button variant="text" onClick={(event) => setCreateFolderAnchor(event.currentTarget)} startIcon={<CreateNewFolderIcon />}>Create Folder</Button>
-                        <CreateFolder onClose={() => setCreateFolderAnchor(null)} anchorEl={createFolderAnchor} currentDirectory={filePaths.join('/')} handleCreateFolder={createStorageObject} isUploading={isUploading} />
-                    </Box>
-                </PanelToolbar>
-                <Divider />
-                <React.Suspense fallback={<LinearProgress color="secondary" />}>
-                    <ErrorBoundary fallback={<ErrorDisplay />}>
-                        <StorageObjectDisplay upload={openFileUpload} path={`/${filePaths.join('/')}`} />
-                    </ErrorBoundary>
-                </React.Suspense>
-            </FileListPanel>
-        </AppFrame>
+                    ))}
+                </Breadcrumbs>
+                <Box sx={{ display: 'flex', gap: '8px' }}>
+                    <Button size="small" variant="contained" startIcon={<FileUploadIcon />} onClick={openFileUpload}>
+                        Upload File
+                    </Button>
+                    <Button variant="text" onClick={(event) => setCreateFolderAnchor(event.currentTarget)} startIcon={<CreateNewFolderIcon />}>
+                        Create Folder
+                    </Button>
+                    <CreateFolder onClose={() => setCreateFolderAnchor(null)} anchorEl={createFolderAnchor} currentDirectory={filePaths.join('/')} handleCreateFolder={createStorageObject} isUploading={isUploading} />
+                </Box>
+            </PanelToolbar>
+            <Divider />
+            <React.Suspense fallback={<LinearProgress color="secondary" />}>
+                <ErrorBoundary fallback={<ErrorDisplay />}>
+                    <StorageObjectDisplay upload={openFileUpload} path={`/${filePaths.join('/')}`} />
+                </ErrorBoundary>
+            </React.Suspense>
+        </FileListPanel>
     );
 };
 
