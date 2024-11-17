@@ -57,28 +57,33 @@ class FileStorageService {
             contents?.map(async (content) => {
                 if ("Prefix" in content) {
                     const s3Object = await this.s3Service.getObject(content.Prefix);
-                    return {
-                        LastModified: s3Object.LastModified,
-                        Key: content.Prefix.replace(`${userId}${path}`, '').slice(0, -1).replaceAll('/',''),
-                        CreatedAt: s3Object.LastModified,
-                        Metadata: s3Object?.Metadata,
-                        FullPath: content.Prefix.replace(`${userId}`, '').slice(0, -1),
-                        ContentType: 'plain/folder'
-                    };
+                    if(s3Object) {
+                        return {
+                            LastModified: s3Object.LastModified,
+                            Key: content.Prefix.replace(`${userId}${path}`, '').slice(0, -1).replaceAll('/',''),
+                            CreatedAt: s3Object.LastModified,
+                            Metadata: s3Object?.Metadata,
+                            FullPath: content.Prefix.replace(`${userId}`, '').slice(0, -1),
+                            ContentType: 'plain/folder'
+                        };
+                    }
+                    
                 } else if ("Key" in content) {
                     if(content.Key == `${userId}${path}/`) {
                         return null
                     }
                     const s3Object = await this.s3Service.getObject(content.Key);
-                    return {
-                        LastModified: content.LastModified,
-                        Key: content.Key?.replace(`${userId}${path}`, '').replaceAll('/',''),
-                        Size: content.Size,
-                        CreatedAt: content.LastModified,
-                        Metadata: s3Object?.Metadata,
-                        FullPath: content.Key.replace(`${userId}/`, ''),
-                        ContentType: s3Object.ContentType
-                    };
+                    if(s3Object) {
+                        return {
+                            LastModified: content.LastModified,
+                            Key: content.Key?.replace(`${userId}${path}`, '').replaceAll('/',''),
+                            Size: content.Size,
+                            CreatedAt: content.LastModified,
+                            Metadata: s3Object?.Metadata,
+                            FullPath: content.Key.replace(`${userId}/`, ''),
+                            ContentType: s3Object.ContentType
+                        };
+                    }
                 }
             })
         ) ?? [];
