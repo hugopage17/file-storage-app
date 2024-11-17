@@ -72,8 +72,7 @@ export class CICDStack extends NestedStack {
       buildspec: 'rest-api/buildspec.yml',
       envVariables: {
         REPO: { type: BuildEnvironmentVariableType.PLAINTEXT, value: 'rest-api' },
-        SERVERLESS_SECRET_NAME: { type: BuildEnvironmentVariableType.PLAINTEXT, value: serverlessSecret.secretName },
-        // SERVERLESS_ACCESS_KEY: {type: BuildEnvironmentVariableType.PLAINTEXT,value: 'AKiB06UXPZ2V8Y7V19AboiKIVMGpRIyX1mQnoRkzKL6S7'}
+        SERVERLESS_SECRET_NAME: { type: BuildEnvironmentVariableType.PLAINTEXT, value: serverlessSecret.secretName }
       },
     });
 
