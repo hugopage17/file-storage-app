@@ -1,9 +1,10 @@
 import React from 'react';
 import { fetchAuthSession, signInWithRedirect } from 'aws-amplify/auth';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { DialogsProvider } from '@toolpad/core/useDialogs';
 import CurrentDirectoryDisplay from './components/CurrentDirectoryDisplay';
+import AuthCallback from './components/auth/Callback';
 import appTheme from './AppTheme';
 import AppContext from './AppContext';
 
@@ -35,7 +36,10 @@ function App() {
                 <DialogsProvider>
                     <Router>
                         <Routes>
-                            <Route path="*" element={<CurrentDirectoryDisplay />} />
+                            <Route path="/" element={<Navigate to="/storage" replace />} />
+                            <Route path="/storage/*" element={<CurrentDirectoryDisplay />} />
+                            <Route path="/auth/callback" element={<AuthCallback />} />
+                            <Route path="/signout" element={<></>} />
                         </Routes>
                     </Router>
                 </DialogsProvider>

@@ -67,7 +67,7 @@ const StorageObjectDisplay: React.FC<IProps> = ({ path, upload }) => {
 
     const { displayView } = React.useContext(AppContext);
 
-    const openFolder = (path: string) => navigate(path);
+    const openFolder = (path: string) => navigate(`/storage${path}`);
 
     if (!storage?.length) {
         return <EmptyFolder upload={upload} />;
