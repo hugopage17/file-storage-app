@@ -51,7 +51,7 @@ const AppFrame: React.FC<IProps> = ({ children }) => {
             <AppBar component="nav" sx={{ p: 0 }} elevation={0} color='transparent'>
                 <Toolbar variant="dense">
                     <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px' }}>
-                        <img src="/logo/upload.png" alt="app-logo" width={32} />
+                        <img src="/logo/logo.png" alt="app-logo" width={32} />
                         <Typography fontWeight={theme.typography.fontWeightBold}>Cloud Storage</Typography>
                     </span>
 
