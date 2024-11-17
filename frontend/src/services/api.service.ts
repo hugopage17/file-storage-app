@@ -6,7 +6,7 @@ class APIService {
 
     constructor(){
         this.axiosClient = new Axios({
-            baseURL: 'https://num1w1i8d2.execute-api.ap-southeast-2.amazonaws.com/dev',
+            baseURL: import.meta.env.VITE_API_URL,
             headers: {
                 'Content-Type': 'application/json',
             }

@@ -5,7 +5,9 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "tsc -b && vite build",
+        "start:dev": "vite --mode production",
+        "start:local": "vite --mode development",
+        "build": "tsc -b && vite build --mode production",
         "lint": "eslint .",
         "preview": "vite preview"
     },
@@ -17,6 +19,7 @@
         "@toolpad/core": "^0.9.0",
         "aws-amplify": "^6.8.0",
         "axios": "^1.7.7",
+        "dotenv": "^16.4.5",
         "moment-timezone": "^0.5.46",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",

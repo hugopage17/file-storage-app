@@ -7,16 +7,16 @@ import App from './App.tsx';
 Amplify.configure({
     Auth: {
         Cognito: {
-            userPoolId: 'ap-southeast-2_s17BJ39Bg',
-            userPoolClientId: '7ropuvd38umflu3nh8h13b983r',
+            userPoolId: import.meta.env.VITE_USER_POOL_ID,
+            userPoolClientId: import.meta.env.VITE_APP_CLIENT,
             identityPoolId: '',
             loginWith: {
                 email: true,
                 oauth: {
-                    domain: 'file-storage-app.auth.ap-southeast-2.amazoncognito.com',
+                    domain: import.meta.env.VITE_AUTH_DOMAIN,
                     scopes: ['openid', 'email', 'profile'],
-                    redirectSignIn: ['http://localhost:5173'],
-                    redirectSignOut: ['http://localhost:5173'],
+                    redirectSignIn: [import.meta.env.VITE_APP_URL],
+                    redirectSignOut: [import.meta.env.VITE_APP_URL],
                     responseType: 'code',
                 },
             },
