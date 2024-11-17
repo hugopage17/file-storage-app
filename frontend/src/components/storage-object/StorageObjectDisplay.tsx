@@ -30,7 +30,7 @@ const cache = new Map();
 const fetchStorage = (path: string) => {
     if (!cache.has(path)) {
         let data: StorageObject[] | undefined;
-        let error: any;
+        let error: Error;
         const promise = apiService.listStorage(path).then((response) => (data = response)).catch((err) => error = err)
 
         cache.set(path, {

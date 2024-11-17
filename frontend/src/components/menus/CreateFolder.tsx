@@ -1,10 +1,11 @@
 import React from 'react';
 import { styled, Menu, MenuList, OutlinedInput, InputAdornment, Typography, FormControl, useTheme } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { IUploadParams } from '../../types';
 
 interface IProps {
     isUploading: boolean;
-    handleCreateFolder: (params: any) => Promise<void>;
+    handleCreateFolder: (params: IUploadParams) => Promise<void>;
     currentDirectory: string;
     anchorEl: HTMLElement | null;
     onClose: () => void;
