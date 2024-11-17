@@ -18,8 +18,14 @@ function App() {
             .catch(() => signInWithRedirect());
     }, []);
 
-    const [darkMode, toggleDarkMode] = React.useState<boolean>(false);
-    const [displayView, toggleDisplayView] = React.useState<string>('tile');
+    let themeInitState = false;
+
+    if (localStorage.getItem('dark_mode')) {
+        themeInitState = JSON.parse(localStorage.getItem('dark_mode')!)
+    }
+
+    const [darkMode, toggleDarkMode] = React.useState<boolean>(themeInitState);
+    const [displayView, toggleDisplayView] = React.useState<string>(localStorage.getItem('view_mode') ?? 'tile');
 
     const theme = appTheme(darkMode)
 

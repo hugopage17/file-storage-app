@@ -35,7 +35,15 @@ const AppFrame: React.FC<IProps> = ({ children }) => {
     const handleDisplayView = (
         _: React.MouseEvent<HTMLElement>,
         newAlignment: string,
-    ) => toggleDisplayView(newAlignment);
+    ) => {
+        toggleDisplayView(newAlignment)
+        localStorage.setItem('view_mode', newAlignment);
+    };
+
+    const handleThemeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        localStorage.setItem('dark_mode', `${event.target.checked}`);
+        toggleDarkMode(event.target.checked)
+    }
 
     return (
         <Box>
@@ -64,7 +72,7 @@ const AppFrame: React.FC<IProps> = ({ children }) => {
                             <Divider />
                             <ListItem>
                                 <ListItemText primary='Dark Mode' />
-                                <Switch checked={darkMode} onChange={(e) => toggleDarkMode(e.target.checked)} />
+                                <Switch checked={darkMode} onChange={handleThemeChange} />
                             </ListItem>
                             <ListItem>
                                 <ListItemText primary='Layout' />
