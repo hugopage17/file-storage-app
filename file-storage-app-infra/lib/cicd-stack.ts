@@ -3,6 +3,7 @@ import { NestedStack, SecretValue } from 'aws-cdk-lib';
 import { Pipeline, Artifact } from 'aws-cdk-lib/aws-codepipeline';
 import { GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { CodeBuildAction } from 'aws-cdk-lib/aws-codepipeline-actions';
+import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { PipelineProject, BuildSpec, LinuxBuildImage, BuildEnvironmentVariableType } from 'aws-cdk-lib/aws-codebuild';
 import { CloudFrontWebDistribution } from 'aws-cdk-lib/aws-cloudfront';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
@@ -105,6 +106,20 @@ export class CICDStack extends NestedStack {
         privileged: true,
         environmentVariables: { ...envVariables },
       },
+      role: new Role(this, `${this.appName}-${id.toLowerCase()}-cb-role`, {
+        roleName: `${this.appName}-${id.toLowerCase()}-cb-role`,
+        assumedBy: new ServicePrincipal('codebuild.amazonaws.com'),
+        inlinePolicies: {
+          RolePolicy: new PolicyDocument({
+            statements: [
+              new PolicyStatement({
+                resources: ['*'],
+                actions: ['cloudformation:*'],
+              })
+            ],
+          }),
+        },
+      }),
     });
   }
 }

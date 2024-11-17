@@ -44,7 +44,7 @@ class FileStorageService {
         }
         
         await this.s3Service.upload({
-            fileName: `${claims.sub}/${fileName}`,
+            fileName: `${claims.sub}/${fileName.replaceAll('%20', ' ')}`,
             fileData: fileBody,
             contentType,
             contentEncoding

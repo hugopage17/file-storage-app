@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography, styled, ButtonBase, IconButton, Menu, MenuList, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import FileOpenIcon from '@mui/icons-material/FileOpen';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -44,12 +45,24 @@ const StorageThumbnail: React.FC<IProps> = ({ storageObject, openFolder }) => {
         setMenuAnchor(null);
     }
 
+    const isFolder = storageObject.ContentType.split('/').pop() === 'folder';
+
+    const handleClick = async (event: React.MouseEvent<HTMLLIElement, MouseEvent> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        if (isFolder) {
+            openFolder()
+        } else {
+            await downloadObject(event as React.MouseEvent<HTMLLIElement, MouseEvent>);
+        }
+    }
+
     const openInfo = async (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
         event.stopPropagation();
         setMenuAnchor(null);
         await dialogs.open(FileInfo, {
             storageObject,
-            downloadObject,
+            downloadObject: async () => {
+                await handleClick(event);
+            },
             deleteObject: async () => {
                 await StorageObjectService.deleteObject(storageObject, event)
             }
@@ -63,10 +76,9 @@ const StorageThumbnail: React.FC<IProps> = ({ storageObject, openFolder }) => {
             action: async (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => await openInfo(event)
         },
         {
-            name: 'Download',
-            icon: <FileDownloadIcon />,
-            action: async (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => await downloadObject(event),
-            disabled: storageObject.ContentType.split('/').pop() === 'folder'
+            name: 'Open',
+            icon: isFolder ? <FolderOpenIcon /> : < FileOpenIcon />,
+            action: async (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => await handleClick(event),
         },
         {
             name: 'Delete',
@@ -74,14 +86,6 @@ const StorageThumbnail: React.FC<IProps> = ({ storageObject, openFolder }) => {
             action: async (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => await StorageObjectService.deleteObject(storageObject, event)
         }
     ];
-
-    const handleClick = async () => {
-        if (storageObject.ContentType.split('/').pop() === 'folder') {
-            openFolder()
-        } else {
-            await downloadObject();
-        }
-    }
 
     const fileName = () => {
         if (storageObject.Key.length <= 20) {
@@ -107,7 +111,7 @@ const StorageThumbnail: React.FC<IProps> = ({ storageObject, openFolder }) => {
                 }}>
                     <MenuList dense>
                         {menuItems.map((item) => (
-                            <MenuItem disabled={item?.disabled} key={`storage-object-thumbnail-menu-item-${item.name}`} onClick={async (event) => await item.action(event)}>
+                            <MenuItem key={`storage-object-thumbnail-menu-item-${item.name}`} onClick={async (event) => await item.action(event)}>
                                 <ListItemIcon>
                                     {item.icon}
                                 </ListItemIcon>

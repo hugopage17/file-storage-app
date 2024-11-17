@@ -46,11 +46,16 @@ const CurrentDirectory: React.FC = () => {
     const [isUploading, toggleUploadState] = React.useState<boolean>(false);
 
     const createStorageObject = async (uploadParams: any) => {
+        console.log(uploadParams)
         try {
             toggleUploadState(true);
+            if (uploadParams.isFolder) {
+                if (uploadParams.fileName.includes(' ')) {
+                    throw new Error('Folders cannot contact spaces')
+                }
+            }
             await apiService.upload(uploadParams);
-        } catch (error) {
-            console.error(error);
+            window.location.reload();
         } finally {
             toggleUploadState(false);
         }
@@ -74,7 +79,7 @@ const CurrentDirectory: React.FC = () => {
 
                         await createStorageObject({
                             fileData: reader.result,
-                            fileName: location.pathname === '/' ? file.name : `${location.pathname.slice(1)}/${file.name}`,
+                            fileName: location.pathname === '/' ? decodeURIComponent(file.name) : decodeURIComponent(`${location.pathname.slice(1)}/${file.name}`),
                             contentType: fileType,
                             contentEncoding,
                         });
@@ -106,9 +111,7 @@ const CurrentDirectory: React.FC = () => {
 
     const openFileUpload = async () => {
         await dialogs.open(UploadFileContent, {
-            onConfirm: () => {
-                window.location.reload()
-            },
+            onConfirm: () => null,
             onDrop
         });
     };

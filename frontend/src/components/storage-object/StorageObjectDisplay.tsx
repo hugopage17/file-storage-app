@@ -58,7 +58,7 @@ const EmptyFolder: React.FC<{ upload: () => Promise<void> }> = ({ upload }) => {
 };
 
 const StorageObjectDisplay: React.FC<IProps> = ({ path, upload }) => {
-    const storage: StorageObject[] = fetchStorage(path).read();
+    const storage: StorageObject[] = fetchStorage(decodeURIComponent(path)).read();
     const navigate = useNavigate();
 
     const { displayView } = React.useContext(AppContext);

@@ -92,7 +92,7 @@ const FileInfo: React.FC<DialogProps<IProps>> = ({ payload, open, onClose }) => 
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button color='primary' onClick={downloadObject}>Download</Button>
+                <Button color='primary' onClick={downloadObject}>Open</Button>
                 <Button color='error' onClick={deleteObject}>Delete</Button>
             </DialogActions>
         </BootstrapDialog >

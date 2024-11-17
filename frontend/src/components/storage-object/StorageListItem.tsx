@@ -1,7 +1,8 @@
 import React from 'react';
 import { IconButton, TableRow, TableCell, styled } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import FileOpenIcon from '@mui/icons-material/FileOpen';
 import DeleteIcon from '@mui/icons-material/Delete';
 import moment from 'moment-timezone';
 import { useDialogs } from '@toolpad/core/useDialogs';
@@ -27,33 +28,33 @@ const SecondaryTableCell = styled(TableCell)(({ theme }) => ({
 const StorageListItem: React.FC<IProps> = ({ storageObject, openFolder }) => {
     const dialogs = useDialogs();
 
+    const isFolder = storageObject.ContentType.split('/').pop() === 'folder';
+
+    const handleClick = async (event: React.MouseEvent<any, MouseEvent>) => {
+        if (isFolder) {
+            openFolder()
+        } else {
+            await StorageObjectService.downloadObject(storageObject, event)
+        }
+    }
+
     const openInfo = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.stopPropagation();
         await dialogs.open(FileInfo, {
             storageObject,
-            downloadObject: async () => {
-                await StorageObjectService.downloadObject(storageObject)
-            },
+            downloadObject: async () => await handleClick(event),
             deleteObject: async () => {
                 await StorageObjectService.deleteObject(storageObject)
             }
         });
     };
 
-    const handleClick = async () => {
-        if (storageObject.ContentType.split('/').pop() === 'folder') {
-            openFolder()
-        } else {
-            await StorageObjectService.downloadObject(storageObject)
-        }
-    }
-
     return (
         <TableRow
             hover
             key={storageObject.Key}
             sx={{ '&:last-child td, &:last-child th': { border: 0 }, cursor: 'pointer' }}
-            onClick={() => handleClick()}
+            onClick={handleClick}
         >
             <PrimaryTableCell component="th" scope="row">
                 <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px' }}>
@@ -69,10 +70,8 @@ const StorageListItem: React.FC<IProps> = ({ storageObject, openFolder }) => {
                 <IconButton size='small' color='info' onClick={async (event) => await openInfo(event)}>
                     <InfoIcon />
                 </IconButton>
-                <IconButton disabled={storageObject.ContentType.split('/').pop() === 'folder'} size='small' color='primary' onClick={async (event) => {
-                    await StorageObjectService.downloadObject(storageObject, event)
-                }}>
-                    <FileDownloadIcon />
+                <IconButton size='small' color='primary' onClick={handleClick}>
+                    {isFolder ? <FolderOpenIcon /> : <FileOpenIcon />}
                 </IconButton>
                 <IconButton size='small' color='error' onClick={async (event) => {
                     await StorageObjectService.deleteObject(storageObject, event)
@@ -80,7 +79,7 @@ const StorageListItem: React.FC<IProps> = ({ storageObject, openFolder }) => {
                     <DeleteIcon />
                 </IconButton>
             </TableCell>
-        </TableRow>
+        </TableRow >
     )
 }
 

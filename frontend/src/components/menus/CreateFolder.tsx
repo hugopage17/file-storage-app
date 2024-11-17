@@ -23,6 +23,8 @@ const CreateFolder: React.FC<IProps> = ({ isUploading, handleCreateFolder, curre
 
     const [folderName, setFolderName] = React.useState<string>('');
 
+    const [error, setError] = React.useState<string | undefined>();
+
     return (
         <Menu
             id="create-folder-menu"
@@ -40,17 +42,25 @@ const CreateFolder: React.FC<IProps> = ({ isUploading, handleCreateFolder, curre
                             color='primary'
                             variant='contained'
                             onClick={async () => {
-                                await handleCreateFolder({
-                                    fileName: currentDirectory === '' ? `${folderName}/` : `${currentDirectory}/${folderName}/`,
-                                    fileData: '',
-                                    contentType: "text/plain"
-                                });
-                                window.location.reload();
+                                try {
+                                    setError(undefined)
+                                    await handleCreateFolder({
+                                        fileName: currentDirectory === '' ? `${folderName}/` : `${currentDirectory}/${folderName}/`,
+                                        fileData: '',
+                                        contentType: "text/plain",
+                                        isFolder: true
+                                    })
+                                }
+                                catch (error: any) {
+                                    console.log('it errored')
+                                    setError(error.toString())
+                                }
                             }
                             }>
                             Done
                         </StyledLoadingButton>
                     </InputAdornment>} />
+                    {error && <Typography variant='subtitle2' color='error'>{error}</Typography>}
                 </FormControl>
             </MenuList>
         </Menu>
