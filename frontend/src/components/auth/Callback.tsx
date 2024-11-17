@@ -2,11 +2,14 @@ import React from 'react';
 import { Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AppFrame from '../AppFrame';
+import { fetchAuthSession } from 'aws-amplify/auth';
 
 const Callback = () => {
     const navigate = useNavigate();
 
-    React.useEffect(() => navigate('/'), [])
+    React.useEffect(() => {
+        fetchAuthSession().then(() => navigate('/'))
+    }, [])
 
     return (
         <AppFrame>

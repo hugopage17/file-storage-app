@@ -15,8 +15,8 @@ Amplify.configure({
                 oauth: {
                     domain: import.meta.env.VITE_AUTH_DOMAIN,
                     scopes: ['openid', 'email', 'profile'],
-                    redirectSignIn: [import.meta.env.VITE_APP_URL],
-                    redirectSignOut: [import.meta.env.VITE_APP_URL],
+                    redirectSignIn: [`${import.meta.env.VITE_APP_URL}/auth/callback`],
+                    redirectSignOut: [`${import.meta.env.VITE_APP_URL}/signout`],
                     responseType: 'code',
                 },
             },

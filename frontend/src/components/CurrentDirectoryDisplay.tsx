@@ -54,7 +54,7 @@ const CurrentDirectory: React.FC = () => {
     const location = useLocation();
     const dialogs = useDialogs();
 
-    React.useEffect(() => setFilePaths(location.pathname.replace(/%20/g, ' ').split('/').filter((path) => path !== '')), [location]);
+    React.useEffect(() => setFilePaths(location.pathname.replace(/%20/g, ' ').split('/').filter((path) => !['', 'storage'].includes(path))), [location]);
 
     const navigateBreadCrums = (index: number) => filePaths.slice(0, index + 1).join('/');
 
@@ -94,7 +94,7 @@ const CurrentDirectory: React.FC = () => {
 
                         await createStorageObject({
                             fileData: reader.result,
-                            fileName: location.pathname === '/' ? decodeURIComponent(file.name) : decodeURIComponent(`${location.pathname.slice(1)}/${file.name}`),
+                            fileName: location.pathname === '/' ? decodeURIComponent(file.name) : decodeURIComponent(`${filePaths.join('/')}/${file.name}`),
                             contentType: fileType,
                             contentEncoding,
                         });
@@ -137,11 +137,11 @@ const CurrentDirectory: React.FC = () => {
                 <Toolbar />
                 <PanelToolbar>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <BreadcrumbLink underline="hover" color="inherit" href="/">
+                        <BreadcrumbLink underline="hover" color="inherit" href="/storage">
                             <HomeIcon sx={{ mr: 0.5, fontSize: '24px' }} fontSize="inherit" />
                         </BreadcrumbLink>
                         {filePaths.map((path, index) => (
-                            <BreadcrumbLink underline="none" color="info" href={`/${navigateBreadCrums(index)}`} key={`breadcrumb-path-${index}`}>
+                            <BreadcrumbLink underline="none" color="info" href={`/storage/${navigateBreadCrums(index)}`} key={`breadcrumb-path-${index}`}>
                                 {path}
                             </BreadcrumbLink>
                         ))}
@@ -155,7 +155,7 @@ const CurrentDirectory: React.FC = () => {
                 <Divider />
                 <React.Suspense fallback={<LinearProgress color="secondary" />}>
                     <ErrorBoundary fallback={<ErrorDisplay />}>
-                        <StorageObjectDisplay upload={openFileUpload} path={location.pathname} />
+                        <StorageObjectDisplay upload={openFileUpload} path={`/${filePaths.join('/')}`} />
                     </ErrorBoundary>
                 </React.Suspense>
             </FileListPanel>
