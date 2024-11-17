@@ -7,6 +7,7 @@ import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk
 import { PipelineProject, BuildSpec, LinuxBuildImage, BuildEnvironmentVariableType } from 'aws-cdk-lib/aws-codebuild';
 import { CloudFrontWebDistribution } from 'aws-cdk-lib/aws-cloudfront';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 interface Props {
   spaHostingBucket: Bucket;
@@ -35,6 +36,10 @@ export class CICDStack extends NestedStack {
     const { spaHostingBucket, appCdn, appName, githubSecretName } = props;
     this.appName = appName;
     const sourceOutput = new Artifact(`pipeline-artifact`);
+
+    const serverlessSecret = new Secret(this, 'serverless-secret', {
+        secretName: 'serverless/access_key'
+    });
 
     const sourceAction = new GitHubSourceAction({
       actionName: 'GithubSource',
@@ -67,9 +72,12 @@ export class CICDStack extends NestedStack {
       buildspec: 'rest-api/buildspec.yml',
       envVariables: {
         REPO: { type: BuildEnvironmentVariableType.PLAINTEXT, value: 'rest-api' },
-        SERVERLESS_ACCESS_KEY: {type: BuildEnvironmentVariableType.PLAINTEXT,value: 'AKiB06UXPZ2V8Y7V19AboiKIVMGpRIyX1mQnoRkzKL6S7'}
+        SERVERLESS_SECRET_NAME: { type: BuildEnvironmentVariableType.PLAINTEXT, value: serverlessSecret.secretName },
+        // SERVERLESS_ACCESS_KEY: {type: BuildEnvironmentVariableType.PLAINTEXT,value: 'AKiB06UXPZ2V8Y7V19AboiKIVMGpRIyX1mQnoRkzKL6S7'}
       },
     });
+
+    serverlessSecret.grantRead(restApiBuildProject)
 
     spaHostingBucket.grantReadWrite(reactAppBuildProject);
     appCdn.grantCreateInvalidation(reactAppBuildProject);

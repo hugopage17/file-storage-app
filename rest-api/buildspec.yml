@@ -7,6 +7,7 @@ phases:
     commands:
       - echo Installing Serverless framework
       - npm install -g serverless@3.0.0
+      - export SERVERLESS_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id ${SERVERLESS_SECRET_NAME} --query SecretString --output text)
   pre_build:
     commands:
       - echo Installing project dependencies
