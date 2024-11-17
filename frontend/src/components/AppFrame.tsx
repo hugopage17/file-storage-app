@@ -1,12 +1,12 @@
 import React from 'react';
-import { fetchAuthSession } from 'aws-amplify/auth';
+import { fetchAuthSession, JWT } from 'aws-amplify/auth';
 import { Avatar, CssBaseline, Toolbar, Typography, Box, AppBar, Menu, ListItem, List, IconButton, ListItemText, Divider, useTheme, Switch } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import GridViewIcon from '@mui/icons-material/GridView';
 import ListIcon from '@mui/icons-material/List';
-import { signOut } from 'aws-amplify/auth';
+import { signOut } from 'aws-amplify/auth'
 import AppContext from '../AppContext';
 
 interface IProps {
@@ -19,7 +19,7 @@ const AppFrame: React.FC<IProps> = ({ children }) => {
 
     const theme = useTheme()
 
-    const [user, setUser] = React.useState<any>({});
+    const [user, setUser] = React.useState<JWT['payload'] | undefined>();
 
     const { darkMode, toggleDarkMode, toggleDisplayView, displayView } = React.useContext(AppContext);
 
@@ -59,7 +59,7 @@ const AppFrame: React.FC<IProps> = ({ children }) => {
                     >
                         <List dense>
                             <ListItem>
-                                <ListItemText primary='Account' secondary={user?.email} />
+                                <ListItemText primary='Account' secondary={user?.email?.toString()} />
                             </ListItem>
                             <Divider />
                             <ListItem>

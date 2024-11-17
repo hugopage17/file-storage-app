@@ -12,6 +12,7 @@ import AppFrame from './AppFrame';
 import UploadFileContent from './dialogs/UploadFileDialog';
 import { apiService } from '../services/api.service';
 import CreateFolder from './menus/CreateFolder';
+import { IUploadParams } from '../types';
 
 const FileListPanel = styled(Box)(({ theme }) => ({
     paddingLeft: theme.spacing(16),
@@ -59,7 +60,7 @@ const CurrentDirectory: React.FC = () => {
 
     const [isUploading, toggleUploadState] = React.useState<boolean>(false);
 
-    const createStorageObject = async (uploadParams: any) => {
+    const createStorageObject = async (uploadParams: IUploadParams) => {
         console.log(uploadParams)
         try {
             toggleUploadState(true);

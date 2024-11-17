@@ -1,5 +1,6 @@
 import { fetchAuthSession } from 'aws-amplify/auth'
 import { Axios } from "axios"
+import { IUploadParams } from '../types';
 
 class APIService {
     private readonly axiosClient: Axios;
@@ -29,7 +30,7 @@ class APIService {
         }
     }
 
-    async upload(uploadParams: any) {
+    async upload(uploadParams: IUploadParams) {
         try {
             const authSession = await fetchAuthSession();
             const idToken = authSession.tokens?.idToken?.toString();
