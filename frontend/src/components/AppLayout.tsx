@@ -91,7 +91,6 @@ const AppLayout: React.FC = () => {
                 </Toolbar>
                 <Divider />
             </AppBar>
-            {/* {children} */}
             <main>
                 <Outlet />
             </main>
