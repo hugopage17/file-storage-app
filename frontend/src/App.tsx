@@ -7,7 +7,7 @@ import CurrentDirectoryDisplay from './components/CurrentDirectoryDisplay';
 import AuthCallback from './components/auth/Callback';
 import appTheme from './AppTheme';
 import AppContext from './AppContext';
-import AppFrame from './components/AppFrame';
+import AppLayout from './components/AppLayout';
 
 function App() {
     React.useEffect(() => {
@@ -38,7 +38,7 @@ function App() {
                     <Router>
                         <Routes>
                             <Route path="/" element={<Navigate to="/storage" replace />} />
-                            <Route path="/storage" element={<AppFrame />}>
+                            <Route path="/storage" element={<AppLayout />}>
                                 <Route index element={<CurrentDirectoryDisplay />} />
                                 <Route path="*" element={<CurrentDirectoryDisplay />} />
                             </Route>

@@ -10,7 +10,7 @@ import { signOut } from 'aws-amplify/auth';
 import { Outlet } from 'react-router-dom';
 import AppContext from '../AppContext';
 
-const AppFrame: React.FC = () => {
+const AppLayout: React.FC = () => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const openMenu = Boolean(anchorEl);
 
@@ -99,4 +99,4 @@ const AppFrame: React.FC = () => {
     );
 };
 
-export default AppFrame;
+export default AppLayout;
