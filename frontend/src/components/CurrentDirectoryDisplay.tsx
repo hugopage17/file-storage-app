@@ -53,6 +53,7 @@ const CurrentDirectory: React.FC = () => {
     const [createFolderAnchor, setCreateFolderAnchor] = React.useState<null | HTMLElement>(null);
 
     const location = useLocation();
+    console.log(location.pathname)
     const dialogs = useDialogs();
 
     React.useEffect(
@@ -103,7 +104,7 @@ const CurrentDirectory: React.FC = () => {
 
                         await createStorageObject({
                             fileData: reader.result,
-                            fileName: location.pathname === '/' ? decodeURIComponent(file.name) : decodeURIComponent(`${filePaths.join('/')}/${file.name}`),
+                            fileName: location.pathname === '/storage' ? decodeURIComponent(file.name) : decodeURIComponent(`${filePaths.join('/')}/${file.name}`),
                             contentType: fileType,
                             contentEncoding,
                         });
