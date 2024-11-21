@@ -7,18 +7,33 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import GridViewIcon from '@mui/icons-material/GridView';
 import ListIcon from '@mui/icons-material/List';
 import { signOut } from 'aws-amplify/auth';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import AppContext from '../AppContext';
+import AppDrawer from './AppDrawer';
 
 const AppLayout: React.FC = () => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const openMenu = Boolean(anchorEl);
 
     const theme = useTheme();
+    const location = useLocation();
 
     const [user, setUser] = React.useState<JWT['payload'] | undefined>();
 
     const { darkMode, toggleDarkMode, toggleDisplayView, displayView } = React.useContext(AppContext);
+
+    const [filePaths, setFilePaths] = React.useState<string[]>([]);
+
+    React.useEffect(
+        () =>
+            setFilePaths(
+                location.pathname
+                    .replace(/%20/g, ' ')
+                    .split('/')
+                    .filter((path) => !['', 'storage'].includes(path))
+            ),
+        [location]
+    );
 
     React.useEffect(() => {
         fetchAuthSession().then((user) => {
@@ -39,9 +54,9 @@ const AppLayout: React.FC = () => {
     };
 
     return (
-        <Box>
+        <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar component="nav" sx={{ p: 0 }} elevation={0} color="transparent">
+            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, p: 0, backgroundColor: darkMode ? '#181A1B' : 'white' }} elevation={0}>
                 <Toolbar variant="dense">
                     <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px' }}>
                         <img src="/logo/logo.png" alt="app-logo" width={32} />
@@ -91,7 +106,10 @@ const AppLayout: React.FC = () => {
                 </Toolbar>
                 <Divider />
             </AppBar>
-            <Outlet />
+            <AppDrawer filePaths={filePaths} />
+            <Box component="main" sx={{ flexGrow: 1 }}>
+                <Outlet context={{ filePaths }} />
+            </Box>
         </Box>
     );
 };
