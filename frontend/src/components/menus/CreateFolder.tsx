@@ -36,15 +36,14 @@ const CreateFolder: React.FC<IProps> = ({ isUploading, handleCreateFolder, curre
             <MenuList dense sx={{ padding: 2, width: 360 }} >
                 <FormControl sx={{ width: '100%' }}>
                     <Typography variant='subtitle2' fontWeight={theme.typography.fontWeightBold} color={theme.palette.text.secondary}>Create New Folder</Typography>
-                    <OutlinedInput onClick={(e) => e.stopPropagation()} onChange={(e) => setFolderName(e.target.value)} color='primary' size='small' placeholder='Folder Name' sx={{ fontSize: 14 }} endAdornment={<InputAdornment position="end">
+                    <OutlinedInput onChange={(e) => setFolderName(e.target.value)} color='primary' size='small' placeholder='Folder Name' sx={{ fontSize: 14 }} endAdornment={<InputAdornment position="end">
                         <StyledLoadingButton
                             loading={isUploading}
                             size='small'
                             color='primary'
                             variant='contained'
-                            onClick={async (event) => {
+                            onClick={async () => {
                                 try {
-                                    event.stopPropagation()
                                     setError(undefined)
                                     await handleCreateFolder({
                                         fileName: currentDirectory === '' ? `${folderName}/` : `${currentDirectory}/${folderName}/`,

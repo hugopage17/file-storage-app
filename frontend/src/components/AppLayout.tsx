@@ -60,7 +60,7 @@ const AppLayout: React.FC = () => {
                 <Toolbar variant="dense">
                     <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px' }}>
                         <img src="/logo/logo.png" alt="app-logo" width={32} />
-                        <Typography fontWeight={theme.typography.fontWeightBold}>Cloud Storage</Typography>
+                        <Typography sx={{ color: darkMode ? 'white' : '#303030' }} fontWeight={theme.typography.fontWeightBold}>Cloud Storage</Typography>
                     </span>
 
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}></Typography>

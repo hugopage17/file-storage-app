@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Toolbar, Box, List, IconButton, ListItemText, Divider, Drawer, Button, Menu, ListItem } from '@mui/material';
+import { styled, Toolbar, Box, List, ListItemText, Drawer, Button, Menu, ListItem, ButtonGroup } from '@mui/material';
 import { useDialogs } from '@toolpad/core/useDialogs';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
@@ -16,6 +16,7 @@ import { IUploadParams } from '../types';
 import { apiService } from '../services/api.service';
 import UploadFileContent from './dialogs/UploadFileDialog';
 import StorageObjectService from '../services/storage-object.service';
+import AppContext from '../AppContext';
 
 const DrawerListItem = styled(ListItemButton)(({ theme }) => ({
     borderRadius: 100,
@@ -33,6 +34,10 @@ const AppDrawer: React.FC<IProps> = ({ filePaths }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [createFolderAnchor, setCreateFolderAnchor] = React.useState<null | HTMLElement>(null);
     const [isUploading, toggleUploadState] = React.useState<boolean>(false);
+
+    const { darkMode } = React.useContext(AppContext);
+
+    const anchorRef = React.useRef<HTMLDivElement>(null);
 
     const drawerLinks = [
         {
@@ -57,13 +62,7 @@ const AppDrawer: React.FC<IProps> = ({ filePaths }) => {
         }
     ];
 
-    const expandButtonMenu = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        event.stopPropagation();
-        setAnchorEl(event.currentTarget)
-    };
-
     const openCreateFolderMenu = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        event.stopPropagation();
         setCreateFolderAnchor(event.currentTarget)
     }
 
@@ -101,42 +100,36 @@ const AppDrawer: React.FC<IProps> = ({ filePaths }) => {
             <Toolbar />
             <Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-                    <Button
-                        size="small"
-                        variant="contained"
-                        onClick={openFileUpload}
-                        startIcon={<FileUploadIcon />}
-                        endIcon={
-                            <>
-                                <Divider orientation='vertical' />
-                                <IconButton onClick={expandButtonMenu}>
-                                    <ArrowDropDownOutlinedIcon />
-                                </IconButton>
-                                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={(event: any) => {
-                                    event.stopPropagation();
-                                    setAnchorEl(null)
-                                }}>
-                                    <ListItem>
-                                        <Button variant="text" startIcon={<CreateNewFolderIcon />} onClick={openCreateFolderMenu}>
-                                            Create Folder
-                                        </Button>
-                                        <CreateFolder
-                                            onClose={(event) => {
-                                                event.stopPropagation();
-                                                setCreateFolderAnchor(null)
-                                            }}
-                                            anchorEl={createFolderAnchor}
-                                            currentDirectory={filePaths.join('/')}
-                                            handleCreateFolder={createStorageObject}
-                                            isUploading={isUploading}
-                                        />
-                                    </ListItem>
-                                </Menu>
-                            </>
-                        }
-                    >
-                        Upload File
-                    </Button>
+                    <ButtonGroup variant={darkMode ? 'outlined' : 'contained'} ref={anchorRef}>
+                        <Button
+                            size="small"
+                            onClick={openFileUpload}
+                            startIcon={<FileUploadIcon />}
+                        >
+                            Upload File
+                        </Button>
+                        <Button
+                            size="small"
+                            onClick={(event) => setAnchorEl(event.currentTarget)}
+                            aria-haspopup="menu"
+                        >
+                            <ArrowDropDownOutlinedIcon />
+                        </Button>
+                    </ButtonGroup>
+                    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
+                        <ListItem>
+                            <Button variant="text" startIcon={<CreateNewFolderIcon />} onClick={openCreateFolderMenu}>
+                                Create Folder
+                            </Button>
+                            <CreateFolder
+                                onClose={() => setCreateFolderAnchor(null)}
+                                anchorEl={createFolderAnchor}
+                                currentDirectory={filePaths.join('/')}
+                                handleCreateFolder={createStorageObject}
+                                isUploading={isUploading}
+                            />
+                        </ListItem>
+                    </Menu>
                 </Box>
                 <List component="nav" sx={{ padding: 2 }}>
                     {drawerLinks.map((linkItem) => (
