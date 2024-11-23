@@ -42,6 +42,9 @@ function App() {
                                 <Route index element={<CurrentDirectoryDisplay />} />
                                 <Route path="*" element={<CurrentDirectoryDisplay />} />
                             </Route>
+                            <Route path="/starred" element={<AppLayout />}>
+                                <Route index element={<></>} />
+                            </Route>
                             <Route path="/auth/callback" element={<AuthCallback />} />
                             <Route path="/signout" element={<></>} />
                         </Routes>

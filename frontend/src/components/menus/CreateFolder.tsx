@@ -8,7 +8,7 @@ interface IProps {
     handleCreateFolder: (params: IUploadParams) => Promise<void>;
     currentDirectory: string;
     anchorEl: HTMLElement | null;
-    onClose: () => void;
+    onClose: (event: any) => void;
 }
 
 const StyledLoadingButton = styled(LoadingButton)(({ theme }) => ({
