@@ -45,21 +45,21 @@ const AppDrawer: React.FC<IProps> = ({ filePaths }) => {
             path: 'storage',
             icon: <HomeOutlinedIcon />
         },
-        {
-            name: 'Starred',
-            path: 'starred',
-            icon: <StarOutlineOutlinedIcon />
-        },
-        {
-            name: 'Shared with me',
-            path: 'shared',
-            icon: <FolderSharedOutlinedIcon />
-        },
-        {
-            name: 'Trash',
-            path: 'trash',
-            icon: <DeleteOutlineOutlinedIcon />
-        }
+        // {
+        //     name: 'Starred',
+        //     path: 'starred',
+        //     icon: <StarOutlineOutlinedIcon />
+        // },
+        // {
+        //     name: 'Shared with me',
+        //     path: 'shared',
+        //     icon: <FolderSharedOutlinedIcon />
+        // },
+        // {
+        //     name: 'Trash',
+        //     path: 'trash',
+        //     icon: <DeleteOutlineOutlinedIcon />
+        // }
     ];
 
     const openCreateFolderMenu = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
